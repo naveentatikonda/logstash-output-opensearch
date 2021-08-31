@@ -324,6 +324,18 @@ module LogStash; module Outputs; class OpenSearch;
 
       adapter_options[:headers] = client_settings[:headers] if client_settings[:headers]
 
+      adapter_options[:aws_access_key_id] = options[:aws_access_key_id]
+
+      adapter_options[:aws_secret_access_key] = options[:aws_secret_access_key]
+
+      adapter_options[:auth_type] = options[:auth_type]
+
+      adapter_options[:region] = options[:region]
+
+      adapter_options[:port] = options[:port]
+
+      adapter_options[:protocol] = options[:protocol]
+
       adapter_class = ::LogStash::Outputs::OpenSearch::HttpClient::ManticoreAdapter
       adapter = adapter_class.new(@logger, adapter_options)
     end
@@ -352,8 +364,8 @@ module LogStash; module Outputs; class OpenSearch;
 
     def host_to_url(h)
       # Never override the calculated scheme
-      raw_scheme = @url_template[:scheme] || 'http'
-
+      # raw_scheme = @url_template[:scheme] || 'http'
+      raw_scheme = @options[:protocol] || 'https'
       raw_user = h.user || @url_template[:user]
       raw_password = h.password || @url_template[:password]
       postfixed_userinfo = raw_user && raw_password ? "#{raw_user}:#{raw_password}@" : nil

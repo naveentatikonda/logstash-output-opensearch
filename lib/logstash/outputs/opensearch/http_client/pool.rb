@@ -84,7 +84,9 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def start
+      puts "Inside Start of Pool"
       update_initial_urls
+      puts "Updated Initial Urls"
       start_resurrectionist
       start_sniffer if @sniffing
     end
@@ -223,7 +225,9 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def health_check_request(url)
+      puts "Inside health check request"
       logger.debug("Running health check to see if an OpenSearch connection is working", url: url.sanitized.to_s, path: @healthcheck_path)
+      #puts url.sanitized.to_s
       perform_request_to_url(url, :head, @healthcheck_path)
     end
 
@@ -257,6 +261,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def perform_request(method, path, params={}, body=nil)
+      # puts "Inside perform_request of pool"
+      # puts method
       with_connection do |url, url_meta|
         resp = perform_request_to_url(url, method, path, params, body)
         [url, url_meta, resp]
@@ -265,12 +271,15 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
 
     [:get, :put, :post, :delete, :patch, :head].each do |method|
       define_method(method) do |path, params={}, body=nil|
+        #puts method
         _, _, response = perform_request(method, path, params, body)
         response
       end
     end
 
     def perform_request_to_url(url, method, path, params={}, body=nil)
+      #puts "Inside perform request to url"
+      #puts method
       res = @adapter.perform_request(url, method, path, params, body)
     rescue *@adapter.host_unreachable_exceptions => e
       raise HostUnreachableError.new(e, url), "Could not reach host #{e.class}: #{e.message}"

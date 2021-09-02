@@ -20,9 +20,12 @@ module LogStash; module PluginMixins; module OpenSearch
         # Password to authenticate to a secure OpenSearch cluster
         :password => { :validate => :password },
 
-        :auth_type => { :validate => :string },
+        :auth_type => {
+        :type => { :validate => :string },
         :aws_access_key_id => { :validate => :string },
-        :aws_secret_access_key => { :validate => :string },
+        :aws_secret_access_key => { :validate => :string }
+        },
+
         :region => { :validate => :string },
         :port => { :validate => :number, :default => 443 },
         :protocol => { :validate => :string, :default => "https" },

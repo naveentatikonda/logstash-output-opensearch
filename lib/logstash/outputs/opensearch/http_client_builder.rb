@@ -112,9 +112,10 @@ module LogStash; module Outputs; class OpenSearch;
                                               :logger => logger,
                                               :protocol => params["protocol"],
                                               :port => params["port"],
-                                              :aws_access_key_id => params["aws_access_key_id"],
-                                              :aws_secret_access_key => params["aws_secret_access_key"],
                                               :auth_type => params["auth_type"],
+                                              # :aws_access_key_id => params["aws_access_key_id"],
+                                              #:aws_secret_access_key => params["aws_secret_access_key"],
+                                              #:type => params["type"],
                                               :region => params["region"]))
     end
 
@@ -183,12 +184,12 @@ module LogStash; module Outputs; class OpenSearch;
     end
 
     def self.setup_aws(logger, params)
-      auth_type = params.values_at('auth_type')
+      type = params.values_at('type')
 
-      return {} unless auth_type
+      return {} unless type
 
       {
-        :auth_type => auth_type
+        :type => type
       }
     end
 

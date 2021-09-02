@@ -13,7 +13,7 @@ require 'aws-sdk-core'
 require 'uri'
 
 module LogStash; module Outputs; class OpenSearch; class HttpClient;
-  DEFAULT_HEADERS = { "Content-Type" => "application/json" }
+  DEFAULT_HEADERS = { "content-type" => "application/json" }
 
   CredentialConfig = Struct.new(
     :access_key_id,
@@ -30,6 +30,9 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     def initialize(logger, options={})
       puts "Inside Intialize"
       puts options
+
+      #puts auth_type
+      #puts options[:auth_type]["aws_access_key_id"]
       @logger = logger
       options = options.clone || {}
       options[:ssl] = options[:ssl] || {}
@@ -44,21 +47,28 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       @port =  options[:port] || 9200
       @protocol =  options[:protocol] || 'http'
       @region =   options[:region] || 'us-east-1'
-      aws_access_key_id =  options[:aws_access_key_id] || nil
-      aws_secret_access_key = options[:aws_secret_access_key] || nil
-      session_token = options[:session_token] || nil
-      profile = options[:profile] || 'default'
-      instance_cred_retries = options[:instance_profile_credentials_retries] || 0
-      instance_cred_timeout = options[:instance_profile_credentials_timeout] || 1
 
-      @auth_type = options[:auth_type] || nil
-      puts options[:auth_type]
+      if options[:auth_type] != nil && options[:auth_type]["type"] == "aws_iam"
+       aws_access_key_id =  options[:auth_type]["aws_access_key_id"] || nil
+       aws_secret_access_key = options[:auth_type]["aws_secret_access_key"] || nil
+       session_token = options[:session_token] || nil
+       profile = options[:profile] || 'default'
+       instance_cred_retries = options[:instance_profile_credentials_retries] || 0
+       instance_cred_timeout = options[:instance_profile_credentials_timeout] || 1
+
+       @type = options[:auth_type]["type"] || nil
+       credential_config = CredentialConfig.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, @region)
+       @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
+
+       puts "Naveen "+@region
+       puts "Naveen "+aws_access_key_id
+       puts "Naveen "+aws_secret_access_key
+       puts session_token
+
+       puts "AWS credentials updated"
+      end
 
 
-      credential_config = CredentialConfig.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, @region)
-      @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
-
-      puts "AWS credentials updated"
       
       if options[:proxy]
         options[:proxy] = manticore_proxy_hash(options[:proxy])
@@ -101,7 +111,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
 
       params[:headers] = params[:headers].clone
       params[:body] = body if body
-
+      puts params
       if url.user
         params[:auth] = { 
           :user => CGI.unescape(url.user),
@@ -115,8 +125,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       request_uri = format_url(url, path)
 
       puts "Checking auth_type"
-      #=begin
-      if @auth_type == "aws_iam"
+
+      if @type == "aws_iam"
         puts "Inside auth_type"
        if @protocol == "https"
          url = URI::HTTPS.build({:host=>URI(request_uri.to_s).host, :port=>@port.to_s, :path=>path})
@@ -125,18 +135,18 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
        end
 
         puts url
+        puts @port
        key = Seahorse::Client::Http::Request.new(options={:endpoint=>url, :http_method => method.to_s.upcase,
                                                          :headers => params[:headers],:body => params[:body]})
-
        aws_signer = Aws::Signers::V4.new(@credentials, 'es', @region )
 
        signed_key =  aws_signer.sign(key)
        params[:headers] =  params[:headers].merge(signed_key.headers)
       end
-      #=end
+
 
       request_uri_as_string = remove_double_escaping(request_uri.to_s)
-
+      # params[:headers].delete("Content-Type")
       puts method.downcase
       puts request_uri_as_string
       puts params
@@ -167,7 +177,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       # sensitive data in a thrown exception or log data
       request_uri.user = nil
       request_uri.password = nil
-
+      puts "Inside format_url"
+      puts request_uri
       return request_uri.to_s if path_and_query.nil?
 
       parsed_path_and_query = java.net.URI.new(path_and_query)

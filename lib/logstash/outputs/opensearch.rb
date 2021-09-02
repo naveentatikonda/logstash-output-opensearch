@@ -109,8 +109,8 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   config :index, :validate => :string
 
 
-  config :aws_access_key_id, :validate => :string
-  config :aws_secret_access_key, :validate => :string
+  #config :aws_access_key_id, :validate => :string
+  #config :aws_secret_access_key, :validate => :string
 
   config :document_type,
     :validate => :string,

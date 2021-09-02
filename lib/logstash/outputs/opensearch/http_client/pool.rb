@@ -278,8 +278,12 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
     end
 
     def perform_request_to_url(url, method, path, params={}, body=nil)
-      #puts "Inside perform request to url"
-      #puts method
+      puts "Inside perform request to url"
+      puts method
+      puts url
+      puts path
+      puts params
+      puts body
       res = @adapter.perform_request(url, method, path, params, body)
     rescue *@adapter.host_unreachable_exceptions => e
       raise HostUnreachableError.new(e, url), "Could not reach host #{e.class}: #{e.message}"

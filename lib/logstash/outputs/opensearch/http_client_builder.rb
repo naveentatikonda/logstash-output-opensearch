@@ -112,11 +112,12 @@ module LogStash; module Outputs; class OpenSearch;
                                               :logger => logger,
                                               :protocol => params["protocol"],
                                               :port => params["port"],
-                                              :auth_type => params["auth_type"],
+                                              #:region => params["region"],
+                                              :auth_type => params["auth_type"]
                                               # :aws_access_key_id => params["aws_access_key_id"],
                                               #:aws_secret_access_key => params["aws_secret_access_key"],
                                               #:type => params["type"],
-                                              :region => params["region"]))
+                                              ))
     end
 
     def self.create_http_client(options)

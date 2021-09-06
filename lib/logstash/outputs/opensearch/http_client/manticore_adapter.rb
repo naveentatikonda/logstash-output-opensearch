@@ -48,6 +48,12 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       @protocol =  options[:protocol] || 'http'
       @region =   options[:region] || 'us-east-1'
 
+      if options[:auth_type] != nil && options[:auth_type]["type"] == "basic_auth"
+        @type = options[:auth_type]["type"]
+        @user = options[:auth_type]["user"]
+        @password = options[:auth_type]["password"]
+      end
+
       if options[:auth_type] != nil && options[:auth_type]["type"] == "aws_iam"
        aws_access_key_id =  options[:auth_type]["aws_access_key_id"] || nil
        aws_secret_access_key = options[:auth_type]["aws_secret_access_key"] || nil
@@ -55,8 +61,9 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
        profile = options[:profile] || 'default'
        instance_cred_retries = options[:instance_profile_credentials_retries] || 0
        instance_cred_timeout = options[:instance_profile_credentials_timeout] || 1
+       @region = options[:auth_type]["region"] || 'us-east-1'
 
-       @type = options[:auth_type]["type"] || nil
+       @type = options[:auth_type]["type"]
        credential_config = CredentialConfig.new(aws_access_key_id, aws_secret_access_key, session_token, profile, instance_cred_retries, instance_cred_timeout, @region)
        @credentials = Aws::CredentialProviderChain.new(credential_config).resolve
 
@@ -112,6 +119,8 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       params[:headers] = params[:headers].clone
       params[:body] = body if body
       puts params
+      puts url
+      puts url.user
       if url.user
         params[:auth] = { 
           :user => CGI.unescape(url.user),
@@ -120,8 +129,14 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
           :password => CGI.unescape(url.password), 
           :eager => true 
         }
+      elsif  @type == "basic_auth"
+        params[:auth] = {
+          :user => @user,
+          :password => @password,
+          :eager => true
+        }
       end
-
+      puts params
       request_uri = format_url(url, path)
 
       puts "Checking auth_type"

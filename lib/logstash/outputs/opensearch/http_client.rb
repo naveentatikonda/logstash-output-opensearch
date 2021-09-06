@@ -332,7 +332,7 @@ module LogStash; module Outputs; class OpenSearch;
 
       # adapter_options[:type] = options[:type]
 
-      adapter_options[:region] = options[:region]
+      #adapter_options[:region] = options[:region]
 
       adapter_options[:port] = options[:port]
 

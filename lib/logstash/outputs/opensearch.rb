@@ -108,10 +108,6 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
   # Joda formats are defined http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html[here].
   config :index, :validate => :string
 
-
-  #config :aws_access_key_id, :validate => :string
-  #config :aws_secret_access_key, :validate => :string
-
   config :document_type,
     :validate => :string,
     :deprecated => "Document types are removed entirely. You should avoid this feature"

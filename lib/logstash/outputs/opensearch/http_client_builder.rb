@@ -67,7 +67,6 @@ module LogStash; module Outputs; class OpenSearch;
 
       client_settings.merge! setup_ssl(logger, params)
       common_options.merge! setup_basic_auth(logger, params)
-      #  common_options.merge! setup_aws(logger, params)
 
       external_version_types = ["external", "external_gt", "external_gte"]
       # External Version validation
@@ -112,11 +111,7 @@ module LogStash; module Outputs; class OpenSearch;
                                               :logger => logger,
                                               :protocol => params["protocol"],
                                               :port => params["port"],
-                                              #:region => params["region"],
                                               :auth_type => params["auth_type"]
-                                              # :aws_access_key_id => params["aws_access_key_id"],
-                                              #:aws_secret_access_key => params["aws_secret_access_key"],
-                                              #:type => params["type"],
                                               ))
     end
 
@@ -181,16 +176,6 @@ module LogStash; module Outputs; class OpenSearch;
       {
         :user => CGI.escape(user),
         :password => CGI.escape(password.value)
-      }
-    end
-
-    def self.setup_aws(logger, params)
-      type = params.values_at('type')
-
-      return {} unless type
-
-      {
-        :type => type
       }
     end
 

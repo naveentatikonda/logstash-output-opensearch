@@ -326,14 +326,6 @@ module LogStash; module Outputs; class OpenSearch;
 
       adapter_options[:auth_type] = options[:auth_type]
 
-      # adapter_options[:aws_access_key_id] = options[:aws_access_key_id]
-
-      # adapter_options[:aws_secret_access_key] = options[:aws_secret_access_key]
-
-      # adapter_options[:type] = options[:type]
-
-      #adapter_options[:region] = options[:region]
-
       adapter_options[:port] = options[:port]
 
       adapter_options[:protocol] = options[:protocol]

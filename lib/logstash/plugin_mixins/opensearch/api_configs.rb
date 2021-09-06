@@ -20,17 +20,22 @@ module LogStash; module PluginMixins; module OpenSearch
         # Password to authenticate to a secure OpenSearch cluster
         :password => { :validate => :password },
 
-        :auth_type => {
-        :type => { :validate => :string },
-        :aws_access_key_id => { :validate => :string },
-        :aws_secret_access_key => { :validate => :string },
-        :region => {:validate => :string}
-        },
+        # Credential resolution logic works as follows:
+        #
+        # - User passed aws_access_key_id and aws_secret_access_key in aes configuration
+        # - Environment Variables - AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+        #   (RECOMMENDED since they are recognized by all the AWS SDKs and CLI except for .NET),
+        #   or AWS_ACCESS_KEY and AWS_SECRET_KEY (only recognized by Java SDK)
+        # - Credential profiles file at the default location (~/.aws/credentials) shared by all AWS SDKs and the AWS CLI
+        # - Instance profile credentials delivered through the Amazon EC2 metadata service
+        # type in auth_type specifies the type of authentication
+        :auth_type => { },
 
-        # :region => { :validate => :string },
+        # You can set the remote port as part of the host, or explicitly here as well
         :port => { :validate => :number, :default => 443 },
-        :protocol => { :validate => :string, :default => "https" },
 
+        # Sets the protocol thats used to connect to elastisearch
+        :protocol => { :validate => :string, :default => "https" },
 
         # The document ID for the index. Useful for overwriting existing entries in
         # OpenSearch with the same ID.

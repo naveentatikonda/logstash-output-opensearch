@@ -22,7 +22,7 @@ module LogStash; module PluginMixins; module OpenSearch
 
         # Credential resolution logic works as follows:
         #
-        # - User passed aws_access_key_id and aws_secret_access_key in aes configuration
+        # - User passed aws_access_key_id and aws_secret_access_key in opensearch configuration
         # - Environment Variables - AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
         #   (RECOMMENDED since they are recognized by all the AWS SDKs and CLI except for .NET),
         #   or AWS_ACCESS_KEY and AWS_SECRET_KEY (only recognized by Java SDK)

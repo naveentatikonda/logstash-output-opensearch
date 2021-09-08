@@ -358,8 +358,9 @@ module LogStash; module Outputs; class OpenSearch;
 
     def host_to_url(h)
       # Never override the calculated scheme
-      # raw_scheme = @url_template[:scheme] || 'http'
-      raw_scheme = @options[:protocol] || 'https'
+      raw_scheme = @url_template[:scheme] || 'http'
+      #raw_scheme = @options[:protocol] || 'https'
+
       raw_user = h.user || @url_template[:user]
       raw_password = h.password || @url_template[:password]
       postfixed_userinfo = raw_user && raw_password ? "#{raw_user}:#{raw_password}@" : nil

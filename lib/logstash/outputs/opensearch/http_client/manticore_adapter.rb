@@ -31,7 +31,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       @logger = logger
       options = options.clone || {}
       options[:ssl] = options[:ssl] || {}
-      puts options
+
       # We manage our own retries directly, so let's disable them here
       options[:automatic_retries] = 0
       # We definitely don't need cookies
@@ -157,6 +157,7 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       # sensitive data in a thrown exception or log data
       request_uri.user = nil
       request_uri.password = nil
+
       return request_uri.to_s if path_and_query.nil?
 
       parsed_path_and_query = java.net.URI.new(path_and_query)

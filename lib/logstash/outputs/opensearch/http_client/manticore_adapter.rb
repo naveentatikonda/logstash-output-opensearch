@@ -38,7 +38,6 @@ module LogStash; module Outputs; class OpenSearch; class HttpClient;
       options[:cookies] = false
 
       @client_params = {:headers => DEFAULT_HEADERS.merge(options[:headers] || {})}
-
       @port =  options[:port] || 9200
       @protocol =  options[:protocol] || 'http'
       @region =   options[:region] || 'us-east-1'

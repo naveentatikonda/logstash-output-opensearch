@@ -419,7 +419,7 @@ class LogStash::Outputs::OpenSearch < LogStash::Outputs::Base
     when :disabled
       @default_index = "logstash-%{+yyyy.MM.dd}"
       @default_template_name = 'logstash'
-    when :v1
+    when :v1, :v8
       @default_index = "ecs-logstash-%{+yyyy.MM.dd}"
       @default_template_name = 'ecs-logstash'
     else
